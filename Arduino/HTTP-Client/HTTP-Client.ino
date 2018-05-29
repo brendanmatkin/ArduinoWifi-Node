@@ -9,18 +9,20 @@
 */
 
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>      // helper to simplify http requests
-//#include <ESP8266WiFiMulti.h>       // alt #include <WiFiManager.h>  (captive portal)
+#include <ESP8266HTTPClient.h>          // helper to simplify http requests
+//#include <ESP8266WiFiMulti.h>         // alt #include <WiFiManager.h>  (captive portal)
 //#include <ESP8266WebServer.h>
-#include <Bounce2.h>
-
-#define BUTTON_PIN 0
+#include <Bounce2.h>                    // button debounce lib. 
 
 
 //ESP8266WiFiMulti WiFiMulti;             // multiple wifi AP
 //WiFiManager wifiManager;                // alt. (wifi auto connect + captive portal)
 //ESP8266WebServer server(80);            // http server
 Bounce button = Bounce();                 // button debouncer
+
+
+/* -- settings -- */
+#define BUTTON_PIN 0
 
 
 /* -- network settings -- */
@@ -49,13 +51,14 @@ void setup() {
   WiFi.begin(ssid, password);                 // connect to your existing network
   int restartCounter = 0;
   while (!WiFi.isConnected()) {               // auto reset if it's not connecting (occasionally hangs otherwise)
-    delay(100); Serial.print("."); restartCounter++;
-    if (restartCounter > 50) ESP.restart();  // if it takes more than ~5 seconds to connect, restart!
+    delay(100); Serial.print("."); 
+    restartCounter++;
+    if (restartCounter > 50) ESP.restart();   // if it takes more than 5 (50x100ms) seconds to connect, restart!
   }
   Serial.printf("  connected.\n");            // yay it worked!
 
 
-  /* init LED (turn on LED when WiFi is connected) */
+  /* init LED (turn on LED when connected) */
   pinMode(LED_BUILTIN, OUTPUT);               // LED_BUILTIN is automagically assigned to the built in LED
   digitalWrite(LED_BUILTIN, LOW);             // low is on!
 
@@ -87,13 +90,13 @@ void loop() {
 
       HTTPClient http;
       Serial.printf("[HTTP] Begin (%s).. \n", remoteURL);
-      http.begin(remoteURL);                // connect to URL
+      http.begin(remoteURL);                                // connect to URL
       Serial.printf("[HTTP] GET..");
-      int httpCode = http.GET();
+      int httpCode = http.GET();                            // send http GET method
       if (httpCode > 0) {
-        Serial.printf(". code: %d\n", httpCode);    // got a server response, what is it?
-        if (httpCode == HTTP_CODE_OK) {                 // OK (aka code == 200)
-          String payload = http.getString();
+        Serial.printf(". code: %d\n", httpCode);            // got a server response, what is it?
+        if (httpCode == HTTP_CODE_OK) {                     // OK (aka code == 200)
+          String payload = http.getString();                // read the page!
           Serial.println(payload);
         }
       }
