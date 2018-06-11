@@ -82,7 +82,7 @@ void setup() {
 
 /* -- begin LOOP -- */
 void loop() {
-  if (WiFi.status() != WL_CONNECTED) {      // only do this stuff if we haven't dropped
+  if (WiFi.status() == WL_CONNECTED) {      // only do this stuff if we haven't dropped
     button.update();                        // update the button debounce object
     if (button.fell()) {                    // only act on the transition!
       // do some things!
